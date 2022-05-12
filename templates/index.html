@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{url_for('static', filename='navbar.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+  <title>Startup Success Predictor</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body class="home-page">
+  <div class="nav">
+    <input type="checkbox" id="nav-check">
+    <div class="nav-header">
+      <div class="nav-title">
+        Startup Success Predictor
+      </div>
+    </div>
+    <div class="nav-btn">
+      <label for="nav-check">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+    
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/analysis">Analyze</a>
+      <a href="/predict">Predict</a>
+    </div>
+  </div>
+  <div class="main-jumbotron-wrapper">
+    <div class="jumbotron">
+      <div>
+        <h1>Startup Launcher</h1>
+        <p class="subtitle">We use Machine Learning to detect all the factors that define a startup's success and provide interactive visualisalizations so that our users can gain a deeper understanding on features involved in a startup's success. Use our tool to predict your startup's success with almost 80% accuracy! </p>
+      </div>
+      <div class="jumbotron-actions">
+        <a href="/analysis" class="type-1">
+          Our Analysis
+        </a>
+        <a href="/predict" class="type-1">
+          Predict Your Success
+        </a>
+      </div>
+    </div>
+    <img src="{{url_for('static', filename='home.png')}}" alt="">
+  </div>
+</body>
+</html>

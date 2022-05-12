@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{url_for('static', filename='navbar.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+  <script src="{{url_for('static', filename='navbar.js')}}"></script>
+  <title>Startup Data Analysis</title>
+</head>
+<body>
+  <div class="nav">
+    <input type="checkbox" id="nav-check">
+    <div class="nav-header">
+      <div class="nav-title">
+        Startup Success Predictor
+      </div>
+    </div>
+    <div class="nav-btn">
+      <label for="nav-check">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+    
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/analysis">Analyze</a>
+      <a href="/predict">Predict</a>
+    </div>
+  </div>
+  <div class="main-content">
+
+    <!-- Pie Chart -->
+    <div class="content-wrapper">
+      <div class="content-text">
+        <h5 class="brown-background">Companies by Status</h5>
+        <p>
+          This pie chat shows the breakdown of the total amount of startups that we analysed based on the companies status at the time of data collection (2013). The different company statuses are:
+          <ul>
+            <li>Closed</li>
+            <li>Acquired</li>
+            <li>Operating</li>
+            <li>IPO</li>
+          </ul>
+        </p>
+      </div>
+      <div class="chart">
+        <canvas id="pieChart" width="100vw" height="100vh"></canvas>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="content-wrapper">
+      <div class="content-text">
+        <h5 class="brown-background">No of Companies by Funding Rounds and Status</h5>
+        <p>
+          This table shows both the values and the percentages split for the number of funding rounds (atmost 15) that companies in each status were able to reach. Some noticeable insights are:
+          <ul>
+            <li>84% of companies did not go through any funding rounds.</li>
+            <li>After 2 fundings rounds, the number of companies that IPOed is greater
+              than the number of closed (failed) companies.</li>
+            <li>We can also observe that as a startup goes through more funding rounds, the likelihood that it will IPO also increases.</li>
+          </ul>
+          
+        </p>
+      </div>
+      <div class="chart">
+        <div class="chart-actions mb-4">
+          <button class="type-2 switch-values">Values</button>
+          <button class="type-2 switch-percents">Percentages</button>
+        </div>
+        <table class="table table-hover table-responsive" id="funding-rounds-values">
+          <thead>
+            <th>#</th>
+            <th>0</th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>Total of<br>Status</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Acquired</td>
+              <td>6800</td>
+              <td>1361</td>
+              <td>622</td>
+              <td>347</td>
+              <td>150</td>
+              <td>58</td>
+              <td>26</td>
+              <td>17</td>
+              <td>7</td>
+              <td>2</td>
+              <td>1</td>
+              <td>1</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>9393</td>
+            </tr>
+            <tr>
+              <td>Closed</td>
+              <td>495</td>
+              <td>1566</td>
+              <td>362</td>
+              <td>93</td>
+              <td>42</td>
+              <td>14</td>
+              <td>3</td>
+              <td>7</td>
+              <td>2</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>2584</td>
+            </tr>
+            <tr>
+              <td>IPO</td>
+              <td>644</td>
+              <td>230</td>
+              <td>94</td>
+              <td>58</td>
+              <td>33</td>
+              <td>27</td>
+              <td>16</td>
+              <td>10</td>
+              <td>9</td>
+              <td>4</td>
+              <td>2</td>
+              <td>3</td>
+              <td>0</td>
+              <td>4</td>
+              <td>0</td>
+              <td>0</td>
+              <td>1134</td>
+            </tr>
+            <tr>
+              <td>Operating</td>
+              <td>156856</td>
+              <td>17373</td>
+              <td>6064</td>
+              <td>2164</td>
+              <td>991</td>
+              <td>501</td>
+              <td>204</td>
+              <td>113</td>
+              <td>49</td>
+              <td>40</td>
+              <td>20</td>
+              <td>6</td>
+              <td>2</td>
+              <td>1</td>
+              <td>1</td>
+              <td>2</td>
+              <td>183387</td>
+            </tr>
+            <tr>
+              <td>Total of<br>Funding Rounds</td>
+              <td>164795</td>
+              <td>20530</td>
+              <td>6142</td>
+              <td>2662</td>
+              <td>1216</td>
+              <td>600</td>
+              <td>249</td>
+              <td>147</td>
+              <td>67</td>
+              <td>46</td>
+              <td>23</td>
+              <td>10</td>
+              <td>3</td>
+              <td>5</td>
+              <td>1</td>
+              <td>2</td>
+              <td>196498</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table table-hover table-responsive" id="funding-rounds-percents">
+          <thead>
+            <th>#</th>
+            <th>0</th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>Total of<br>Status</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Acquired</td>
+              <td>72.39</td>
+              <td>14.49</td>
+              <td>6.62</td>
+              <td>3.69</td>
+              <td>1.6</td>
+              <td>0.62</td>
+              <td>0.28</td>
+              <td>0.18</td>
+              <td>0.07</td>
+              <td>0.02</td>
+              <td>0.01</td>
+              <td>0.01</td>
+              <td>0.01</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>9393</td>
+            </tr>
+            <tr>
+              <td>Closed</td>
+              <td>191.6</td>
+              <td>60.6</td>
+              <td>14.01</td>
+              <td>3.6</td>
+              <td>1.63</td>
+              <td>0.64</td>
+              <td>0.12</td>
+              <td>0.27</td>
+              <td>0.08</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>2584</td>
+            </tr>
+            <tr>
+              <td>IPO</td>
+              <td>56.79</td>
+              <td>20.28</td>
+              <td>8.29</td>
+              <td>5.11</td>
+              <td>2.91</td>
+              <td>2.38</td>
+              <td>1.41</td>
+              <td>0.88</td>
+              <td>0.79</td>
+              <td>0.35</td>
+              <td>0.18</td>
+              <td>0.26</td>
+              <td>0</td>
+              <td>0.35</td>
+              <td>0</td>
+              <td>0</td>
+              <td>1134</td>
+            </tr>
+            <tr>
+              <td>Operating</td>
+              <td>85.53</td>
+              <td>9.47</td>
+              <td>2.76</td>
+              <td>1.18</td>
+              <td>0.54</td>
+              <td>0.27</td>
+              <td>0.11</td>
+              <td>0.06</td>
+              <td>0.03</td>
+              <td>0.02</td>
+              <td>0.01</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>183387</td>
+            </tr>
+            <tr>
+              <td>Total of<br>Funding Rounds</td>
+              <td>83.87</td>
+              <td>10.45</td>
+              <td>3.13</td>
+              <td>1.35</td>
+              <td>0.62</td>
+              <td>0.31</td>
+              <td>0.13</td>
+              <td>0.07</td>
+              <td>0.03</td>
+              <td>0.02</td>
+              <td>0.01</td>
+              <td>0.01</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>196498</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bar Chart -->
+    <div class="content-wrapper">
+      <div class="content-text">
+        <h5 class="brown-background">Companies by Funding Round</h5>
+        <p>
+          This bar graph shows the total number of startups at each funding stage. As we can notice, the number of companies reaching the next round drops substantially with each subsequent funding round.
+        </p>
+      </div>
+      <div class="chart">
+        <canvas id="barChart" width="100vw" height="100vh"></canvas>
+      </div>
+    </div>
+
+    <!-- Stacked Bar Chart -->
+    <div class="content-wrapper">
+      <div class="content-text">
+        <h5 class="brown-background">Companies by Funding Rounds and Status</h5>
+        <p>
+          This stacked bar chart shows the breakdown of the status for all the companies at a particular funding stage. As we can observe from the graph:
+          <ul>
+            <li>
+              Private-equity has the lowest amount of companies that close and the largest amount of companies that reach IPO 
+            </li>
+            <li>
+              Whereas Series-C+ has the largest number of companies that get acquired.
+            </li>
+          </ul>
+        </p>
+      </div>
+      <div class="chart">
+        <canvas id="stackedBarChart" width="100vw" height="100vh"></canvas>
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content-text">
+        <h5 class="brown-background">Feature Importance</h5>
+        <p>
+          This plot shows the top 10 most important features used by our XGBoost model in decreasing order of importance. 
+          As we can see:
+          <ul>
+            <li>
+              The total amount of funding received is the most important feature for this model.
+            </li>
+            <li>
+              Number of relationships is the second most important feature.
+            </li>
+            <li>
+              Some other important features include the number of milestones, age of the startup, and the number of funding rounds that it goes through.
+            </li>
+          </ul>
+        </p>
+      </div>
+      <div class="chart">
+        <canvas id="featureImportanceChart" width="100vw" height="100vh"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="{{url_for('static', filename='analysis.js')}}"></script>
+</body>
+</html>

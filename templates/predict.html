@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{url_for('static', filename='navbar.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  <script src="{{url_for('static', filename='navbar.js')}}"></script>
+  <title>Startup Success Prediction</title>
+</head>
+<body class="">
+  <div class="nav">
+    <input type="checkbox" id="nav-check">
+    <div class="nav-header">
+      <div class="nav-title">
+        Startup Success Predictor
+      </div>
+    </div>
+    <div class="nav-btn">
+      <label for="nav-check">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+    
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/analysis">Analyze</a>
+      <a href="/predict">Predict</a>
+    </div>
+  </div>
+  <div id="app">
+    <div class="container">
+      <div class="main-content">
+        <!-- <h5><span class="brown-background">Will your Startup IPO?</span></h5> -->
+        <h1 class="primary-color main-content-title pb-3">Will your Startup IPO?</h1>
+            <div class="row mb-5">
+              <form class="row col-md-12 input-row">
+                <div v-for="field in fields" class="form-group col-md-6">
+                  <label class="form-label secondary-color" :for="field.id">
+                    [[field.attr]]
+                  </label>
+                  <input v-if="field.type!='select'" class="form-control" :id="field.id" v-model.number="answer[field.id]" :placeholder="field.placeholder" type="text">
+                  <select :id="field.id" v-if="field.type=='select'" class="form-control" v-model="answer[field.id]">
+                    <option selected value="">Select an option</option>
+                    <option v-for="option in field.options" :key="option">[[option]]</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    [[field.invalid_feedback]]
+                  </div>
+                </div>
+              </form>
+            </div>
+        <a class="type-2 predict-button" @click="predict">Predict</a>
+      </div>
+    </div>
+    <div id="resultModal" class="modal customModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Our Prediction</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="text-secondary">Based on historical data, your startup <span class="text-dark font-weight-bold">[[answer.startup_name]]</span> is likely to be:</p>
+            <div :class="[colors[result]]" style="font-size: 3rem">[[result]]</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    new Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      methods: {
+        validate() {
+          console.log(this.answer)
+          if(this.answer.startup_name == undefined || this.answer.startup_name == null || this.answer.startup_name.trim() == "") {
+            this.setInvalid(true, 'startup_name')
+            return false
+          }
+          this.setInvalid(false, 'startup_name')
+          if(!Number.isInteger(this.answer.founding_year) || this.answer.founding_year > 2022) {
+            this.setInvalid(true, 'founding_year')
+            return false
+          } else {
+            this.setInvalid(false, 'founding_year')
+            if(2022 - this.answer.founding_year <= 20) {
+              this.answer.age_set = 'young'
+            } else if(2022 - this.answer.founding_year > 20) {
+              this.answer.age_set = 'old'
+            } else {
+              this.answer.age_set = 'other'
+            }
+          }
+          if(!Number.isInteger(this.answer.funding_rounds) || this.answer.funding_rounds < 0 || this.answer.funding_rounds > 15) {
+            this.setInvalid(true, 'funding_rounds')
+            return false
+          }
+          this.setInvalid(false, 'funding_rounds')
+          if(isNaN(this.answer.funding_total_usd) || this.answer.funding_total_usd < 0) {
+            this.setInvalid(true, 'funding_total_usd')
+            return false
+          }
+          this.setInvalid(false, 'funding_total_usd')
+          if(this.answer.current_funding_round == "") {
+            this.setInvalid(true, 'current_funding_round')
+            return false
+          } else {
+            this.setInvalid(false, 'current_funding_round')
+            this.answer.angel = 0
+            this.answer.crowdfunding = 0
+            this.answer.other = 0
+            this.answer["post-ipo"] = 0
+            this.answer["private-equity"] = 0
+            this.answer["series-a"] = 0
+            this.answer["series-b"] = 0
+            this.answer["series-c+"] = 0
+            this.answer.venture = 0
+
+            if(this.answer.current_funding_round == 'Angel') {
+              this.answer.angel = 1
+            }
+            else if(this.answer.current_funding_round == 'Crowdfunding') {
+              this.answer.crowdfunding = 1
+            }
+            else if(this.answer.current_funding_round == 'Other') {
+              this.answer.other = 1
+            }
+            else if(this.answer.current_funding_round == 'Post-IPO') {
+              this.answer['post-ipo'] = 1
+            }
+            else if(this.answer.current_funding_round == 'Private Equity') {
+              this.answer['private-equity'] = 1
+            }
+            else if(this.answer.current_funding_round == 'Series A') {
+              this.answer['series-a'] = 1
+            }
+            else if(this.answer.current_funding_round == 'Series B') {
+              this.answer['series-b'] = 1
+            }
+            else if(this.answer.current_funding_round == 'Series C+') {
+              this.answer['series-c+'] = 1
+            }
+            else if(this.answer.current_funding_round == 'Venture') {
+              this.answer.venture = 1
+            }
+          }
+          if(!Number.isInteger(this.answer.milestones) || this.answer.milestones < 0) {
+            this.setInvalid(true, 'milestones')
+            return false
+          }
+          this.setInvalid(false, 'milestones')
+          if(!Number.isInteger(this.answer.relationships) || this.answer.relationships < 0) {
+            this.setInvalid(true, 'relationships')
+            return false
+          }
+          this.setInvalid(false, 'relationships')
+          if(!Number.isInteger(this.answer.closed) || this.answer.closed < 0) {
+            this.setInvalid(true, 'closed')
+            return false
+          }
+          this.setInvalid(false, 'closed')
+          if(!Number.isInteger(this.answer.dev) || this.answer.dev < 0) {
+            this.setInvalid(true, 'dev')
+            return false
+          }
+          this.setInvalid(false, 'dev')
+          if(!Number.isInteger(this.answer.operating) || this.answer.operating < 0) {
+            this.setInvalid(true, 'operating')
+            return false
+          }
+          this.setInvalid(false, 'operating')
+
+          return true
+        },
+        setInvalid(flag, id) {
+          if(flag) {
+            console.log($(`#${id}`), id)
+            $(`#${id}`).addClass('is-invalid')
+            $(`#${id}`).removeClass('is-valid')
+          } else {
+            $(`#${id}`).removeClass('is-invalid')
+            $(`#${id}`).addClass('is-valid')
+          }
+        },
+        predict() {
+          // Make API POST call here
+          let _this = this
+          let result = this.validate()
+          if(!result) return
+          let obj = {
+            funding_rounds: this.answer.funding_rounds, 
+            funding_total_usd: this.answer.funding_total_usd,
+            milestones: this.answer.milestones,
+            relationships: this.answer.relationships,
+            angel: this.answer.angel,
+            crowdfunding: this.answer.crowdfunding,
+            other: this.answer.other,
+            'post-ipo': this.answer['post-ipo'],
+            'private-equity': this.answer['private-equity'],
+            'series-a': this.answer["series-a"],
+            'series-b': this.answer["series-b"],
+            'series-c+': this.answer["series-c+"],
+            venture: this.answer.venture,
+            closed: this.answer.closed,
+            dev: this.answer.dev,
+            operating: this.answer.operating,
+            age_set: this.answer.age_set
+          }
+          console.log(obj)
+          fetch('/endpoint', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+          }).then((res) => {
+            return res.json()
+          }).then((response) => {
+            console.log(response)
+            _this.result = response.result
+            $('#resultModal').modal()
+          })
+        }
+      },
+      data: {
+        result: "",
+        colors: {
+          "": "text-center",
+          "Acquired": "text-center text-primary",
+          "Operating": "text-center text-info",
+          "Closed": "text-center text-secondary",
+          "Ipo": "text-center text-success"
+        },
+        answer: {
+          startup_name: "",
+          founding_year: "",
+          funding_rounds: null,
+          current_funding_round: "",
+          funding_total_usd: null,
+          milestones: null,
+          relationships: null,
+          closed: null,
+          dev: null,
+          operating: null,
+          age_set: "",
+          angel: null,
+          crowdfunding: null,
+          other: null,
+          "post-ipo": null,
+          "private-equity": null,
+          "series-a": null,
+          "series-b": null,
+          "series-c+": null,
+          venture: null
+        },
+        fields: [
+          {
+            type: "text",
+            attr: "Startup Name",
+            id: "startup_name",
+            placeholder: "Ex. Uberella etc.",
+            invalid_feedback: "Startup Name should be a non-empty string."
+          },
+          {
+            type: "number",
+            attr: 'Founding year',
+            id: 'founding_year',
+            placeholder: 'Ex. 2019',
+            invalid_feedback: "Founding Year should be an integer less than or equal to the current year."
+          },
+          {
+            type: "number",
+            attr: '# of funding rounds',
+            id: 'funding_rounds',
+            placeholder: 'Number of funding rounds undergone',
+            invalid_feedback: "# of funding rounds should be an integer >= 0 and <= 15."
+          },
+          {
+            type: 'select',
+            attr: 'Select your Current Funding Round',
+            id: "current_funding_round",
+            invalid_feedback: "Please select a funding round",
+            options: [
+              'Angel',
+              'Venture',
+              'Series A',
+              'Series B',
+              'Series C+',
+              'Post-IPO',
+              'Private Equity',
+              'Crowdfunding',
+              'Other'
+            ]
+          },
+          {
+            type: "number",
+            attr: 'Total funding (in USD)',
+            id: 'funding_total_usd',
+            placeholder: 'Total Funding Acquired (in USD)',
+            invalid_feedback: "Total funding must be any number greater than or equal to 0."
+          },
+          {
+            type: "number",
+            attr: 'Milestones',
+            id: 'milestones',
+            placeholder: 'Milestones achieved',
+            invalid_feedback: "Milestones should be an integer greater than or equal to 0."
+          },
+          {
+            type: "number",
+            attr: 'Relationships',
+            id: 'relationships',
+            placeholder: 'Relationships in the Industry',
+            invalid_feedback: "Relationships should be an integer greater than or equal to 0."
+          },
+          {
+            type: "number",
+            attr: 'Closed',
+            id: 'closed',
+            placeholder: 'Products Closed',
+            invalid_feedback: "Products closed should be an integer greater than or equal to 0."
+          },
+          {
+            type: "number",
+            attr: 'Dev',
+            id: 'dev',
+            placeholder: 'Products in Development',
+            invalid_feedback: "Products in development should be an integer greater than or equal to 0."
+          },
+          {
+            type: "number",
+            attr: 'Operating',
+            id: 'operating',
+            placeholder: 'Products Currently Operating',
+            invalid_feedback: "Products operating should be an integer greater than or equal to 0."
+          }
+        ]
+      }
+    })
+  </script>
+</body>
+</html>
